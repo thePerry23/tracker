@@ -1,0 +1,975 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Syllabdosth Design Tracker</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+/* ─── LOGIN ─── */
+.login-screen {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  padding: max(24px, env(safe-area-inset-left, 0px));
+}
+.login-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  width: 100%; max-width: 360px;
+}
+.login-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 18px; font-weight: 700; margin-bottom: 6px;
+}
+.login-logo .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.login-sub { font-size: 13px; color: var(--fg3); margin-bottom: 28px; }
+.login-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+.login-label { font-size: 12px; font-weight: 600; color: var(--fg2); text-transform: uppercase; letter-spacing: .04em; }
+.login-input {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 12px;
+  font-family: inherit; font-size: 14px; color: var(--fg);
+  outline: none; transition: border-color .15s; width: 100%;
+}
+.login-input:focus { border-color: var(--accent); }
+.login-btn {
+  width: 100%; background: var(--accent); border: none;
+  border-radius: var(--radius-sm); padding: 11px;
+  font-family: inherit; font-size: 14px; font-weight: 600; color: #fff;
+  cursor: pointer; margin-top: 6px; transition: opacity .15s;
+}
+.login-btn:hover { opacity: .85; }
+.login-error {
+  font-size: 13px; color: var(--crit);
+  margin-top: 12px; text-align: center; min-height: 18px;
+}
+.logout-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 5px 12px;
+  font-family: inherit; font-size: 13px; color: var(--fg3);
+  cursor: pointer; transition: color .15s, border-color .15s;
+}
+.logout-btn:hover { color: var(--crit); border-color: var(--crit); }
+
+/* ─── Syllabdosth Design Tracker — dark-first studio tool ─── */
+:root {
+  --bg:       #0e0e11;
+  --bg2:      #16161b;
+  --bg3:      #1e1e26;
+  --border:   #2a2a35;
+  --fg:       #e8e8f0;
+  --fg2:      #9898b0;
+  --fg3:      #5a5a72;
+  --accent:   #7c6af5;
+  --accent2:  #a899ff;
+  --accent-bg:#1c1830;
+  --good:     #3db87a;
+  --warn:     #e8a240;
+  --crit:     #e85b5b;
+  --info:     #4ab3e8;
+  --radius:   10px;
+  --radius-sm:6px;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg:       #f4f3f8;
+    --bg2:      #ffffff;
+    --bg3:      #eceaf5;
+    --border:   #d8d5ec;
+    --fg:       #1a1a2e;
+    --fg2:      #5a567a;
+    --fg3:      #9a96b8;
+    --accent:   #6553e8;
+    --accent2:  #8472f5;
+    --accent-bg:#ede9ff;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg:       #f4f3f8;
+  --bg2:      #ffffff;
+  --bg3:      #eceaf5;
+  --border:   #d8d5ec;
+  --fg:       #1a1a2e;
+  --fg2:      #5a567a;
+  --fg3:      #9a96b8;
+  --accent:   #6553e8;
+  --accent2:  #8472f5;
+  --accent-bg:#ede9ff;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+  min-height: 100%;
+}
+
+/* ── Layout ── */
+.app { display: flex; flex-direction: column; min-height: 100%; }
+
+.header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0 max(16px, env(safe-area-inset-left, 0px));
+  padding-block: 0;
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 56px;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 30;
+  background: var(--bg);
+}
+
+.logo {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+.nav { display: flex; gap: 2px; }
+.nav-btn {
+  background: none; border: none; cursor: pointer;
+  padding: 6px 14px; border-radius: var(--radius-sm);
+  font-family: inherit; font-size: 13px; font-weight: 500;
+  color: var(--fg2);
+  transition: background .15s, color .15s;
+}
+.nav-btn:hover { background: var(--bg3); color: var(--fg); }
+.nav-btn.active { background: var(--accent-bg); color: var(--accent2); }
+
+.header-right { display: flex; align-items: center; gap: 8px; }
+.theme-toggle {
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 6px 10px;
+  cursor: pointer; color: var(--fg2); font-size: 13px;
+  font-family: inherit;
+  transition: border-color .15s, color .15s;
+}
+.theme-toggle:hover { color: var(--fg); border-color: var(--fg3); }
+
+.add-btn {
+  background: var(--accent); border: none; border-radius: var(--radius-sm);
+  padding: 7px 14px; cursor: pointer; font-family: inherit;
+  font-size: 13px; font-weight: 600; color: #fff;
+  transition: opacity .15s;
+  white-space: nowrap;
+}
+.add-btn:hover { opacity: .85; }
+
+/* ── Views ── */
+.view { display: none; flex: 1; }
+.view.active { display: block; }
+
+/* ── Tracker View ── */
+.tracker-toolbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 0 12px;
+  flex-wrap: wrap;
+}
+.search-wrap { position: relative; flex: 1; min-width: 160px; }
+.search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: .4; }
+.search-input {
+  width: 100%;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 7px 10px 7px 32px;
+  font-family: inherit; font-size: 13px; color: var(--fg);
+  outline: none; transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-input::placeholder { color: var(--fg3); }
+
+.filter-select {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 7px 10px;
+  font-family: inherit; font-size: 13px; color: var(--fg);
+  outline: none; cursor: pointer; transition: border-color .15s;
+}
+.filter-select:focus { border-color: var(--accent); }
+
+/* ── Project Cards ── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  padding-bottom: 32px;
+}
+.project-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color .15s, transform .1s;
+  position: relative;
+  overflow: hidden;
+}
+.project-card::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+.project-card.status-concept::before { background: var(--fg3); }
+.project-card.status-in-progress::before { background: var(--info); }
+.project-card.status-review::before { background: var(--warn); }
+.project-card.status-done::before { background: var(--good); }
+.project-card.status-on-hold::before { background: var(--crit); }
+
+.project-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.card-title { font-weight: 600; font-size: 15px; line-height: 1.3; flex: 1; }
+.card-actions { display: flex; gap: 4px; }
+.icon-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--fg3); padding: 4px; border-radius: 4px;
+  font-size: 14px; line-height: 1;
+  transition: color .15s, background .15s;
+}
+.icon-btn:hover { color: var(--fg); background: var(--bg3); }
+.icon-btn.del:hover { color: var(--crit); }
+
+.card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.badge {
+  font-size: 11px; font-weight: 500; letter-spacing: .03em;
+  padding: 2px 8px; border-radius: 20px; text-transform: uppercase;
+}
+.badge-type { background: var(--bg3); color: var(--fg2); }
+.badge-status { }
+.badge-status.concept  { background: rgba(90,90,114,.2); color: var(--fg2); }
+.badge-status.in-progress { background: rgba(74,179,232,.15); color: var(--info); }
+.badge-status.review   { background: rgba(232,162,64,.15); color: var(--warn); }
+.badge-status.done     { background: rgba(61,184,122,.15); color: var(--good); }
+.badge-status.on-hold  { background: rgba(232,91,91,.15); color: var(--crit); }
+
+.card-client { font-size: 13px; color: var(--fg2); margin-bottom: 6px; }
+.card-deadline {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; color: var(--fg3);
+  display: flex; align-items: center; gap: 5px;
+}
+.card-deadline.overdue { color: var(--crit); }
+.card-deadline.soon { color: var(--warn); }
+
+.card-notes { font-size: 13px; color: var(--fg2); margin-top: 8px; line-height: 1.4; }
+
+.empty-state {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--fg3);
+}
+.empty-state h3 { font-size: 17px; color: var(--fg2); margin-bottom: 8px; }
+
+/* ── Calendar View ── */
+.cal-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 0 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cal-nav { display: flex; align-items: center; gap: 8px; }
+.cal-nav-btn {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--fg2); font-size: 16px;
+  transition: border-color .15s, color .15s;
+}
+.cal-nav-btn:hover { color: var(--fg); border-color: var(--fg3); }
+.cal-month { font-size: 17px; font-weight: 600; min-width: 170px; text-align: center; }
+.cal-today-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 5px 12px;
+  font-family: inherit; font-size: 13px; color: var(--fg2);
+  cursor: pointer; transition: border-color .15s, color .15s;
+}
+.cal-today-btn:hover { color: var(--fg); border-color: var(--fg3); }
+
+.cal-grid-wrap { overflow-x: auto; }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  min-width: 560px;
+  margin-bottom: 32px;
+}
+.cal-dow {
+  background: var(--bg2);
+  padding: 8px 10px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--fg3);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+.cal-cell {
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  min-height: 100px;
+  padding: 6px;
+  vertical-align: top;
+}
+.cal-cell:nth-child(7n) { border-right: none; }
+.cal-cell.other-month .cal-date { color: var(--fg3); }
+.cal-cell.today { background: var(--accent-bg); }
+.cal-cell.today .cal-date {
+  background: var(--accent); color: #fff;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.cal-date {
+  font-size: 12px; font-weight: 500;
+  color: var(--fg2);
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.cal-event {
+  font-size: 11px; font-weight: 500;
+  padding: 2px 6px; border-radius: 4px;
+  margin-bottom: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  cursor: pointer;
+  transition: opacity .1s;
+}
+.cal-event:hover { opacity: .75; }
+.cal-event.concept    { background: rgba(90,90,114,.25); color: var(--fg2); }
+.cal-event.in-progress{ background: rgba(74,179,232,.2); color: var(--info); }
+.cal-event.review     { background: rgba(232,162,64,.2); color: var(--warn); }
+.cal-event.done       { background: rgba(61,184,122,.2); color: var(--good); }
+.cal-event.on-hold    { background: rgba(232,91,91,.2); color: var(--crit); }
+.cal-more {
+  font-size: 10px; color: var(--fg3); cursor: pointer; padding: 0 4px;
+}
+
+/* ── Modal ── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  z-index: 100; display: flex; align-items: center; justify-content: center;
+  padding: max(16px, env(safe-area-inset-left, 0px));
+  opacity: 0; pointer-events: none; transition: opacity .15s;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  width: 100%; max-width: 520px;
+  max-height: 90vh; overflow-y: auto;
+  transform: translateY(8px);
+  transition: transform .15s;
+}
+.modal-backdrop.open .modal { transform: none; }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 20px; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-field.full { grid-column: 1/-1; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--fg2); letter-spacing: .04em; text-transform: uppercase; }
+.form-input, .form-select, .form-textarea {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 10px;
+  font-family: inherit; font-size: 14px; color: var(--fg);
+  outline: none; transition: border-color .15s;
+  width: 100%;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-textarea { min-height: 80px; resize: vertical; }
+
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+.btn-cancel {
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 16px;
+  font-family: inherit; font-size: 14px; color: var(--fg2);
+  cursor: pointer; transition: border-color .15s, color .15s;
+}
+.btn-cancel:hover { color: var(--fg); border-color: var(--fg3); }
+.btn-save {
+  background: var(--accent); border: none;
+  border-radius: var(--radius-sm); padding: 8px 20px;
+  font-family: inherit; font-size: 14px; font-weight: 600; color: #fff;
+  cursor: pointer; transition: opacity .15s;
+}
+.btn-save:hover { opacity: .85; }
+
+/* ── Stats bar ── */
+.stats-bar {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.stat-chip {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--fg2);
+}
+.stat-chip b { font-variant-numeric: tabular-nums; font-size: 15px; color: var(--fg); }
+.stat-sep { color: var(--border); }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-field.full { grid-column: 1; }
+  .cal-cell { min-height: 64px; }
+  .header { height: 52px; }
+  .nav-btn { padding: 6px 10px; }
+}
+</style>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo"><div class="logo-dot"></div>syllabdosth</div>
+    <div class="login-sub">Design Tracker — members only</div>
+    <div class="login-field">
+      <label class="login-label">Username</label>
+      <input class="login-input" id="loginUser" placeholder="username" autocomplete="username" autocapitalize="none">
+    </div>
+    <div class="login-field">
+      <label class="login-label">Password</label>
+      <input class="login-input" id="loginPass" placeholder="password" type="password" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="loginBtn">Sign in</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<div class="app">
+
+  <header class="header">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      syllabdosth
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" data-view="tracker">Tracker</button>
+      <button class="nav-btn" data-view="calendar">Calendar</button>
+    </nav>
+    <div class="header-right">
+      <button class="logout-btn" id="logoutBtn">Sign out</button>
+      <button class="theme-toggle" id="themeToggle">Light</button>
+      <button class="add-btn" id="addProjectBtn">+ New Project</button>
+    </div>
+  </header>
+
+  <!-- TRACKER VIEW -->
+  <div class="view active" id="view-tracker">
+    <div class="stats-bar" id="statsBar"></div>
+    <div class="tracker-toolbar">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input class="search-input" id="searchInput" placeholder="Search projects…" autocomplete="off">
+      </div>
+      <select class="filter-select" id="filterStatus">
+        <option value="">All statuses</option>
+        <option value="concept">Concept</option>
+        <option value="in-progress">In Progress</option>
+        <option value="review">Review</option>
+        <option value="done">Done</option>
+        <option value="on-hold">On Hold</option>
+      </select>
+      <select class="filter-select" id="filterType">
+        <option value="">All types</option>
+        <option value="Logo">Logo</option>
+        <option value="Branding">Branding</option>
+        <option value="Social Media">Social Media</option>
+        <option value="Print">Print</option>
+        <option value="Web Design">Web Design</option>
+        <option value="Motion">Motion</option>
+        <option value="Packaging">Packaging</option>
+        <option value="Illustration">Illustration</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="projects-grid" id="projectsGrid"></div>
+  </div>
+
+  <!-- CALENDAR VIEW -->
+  <div class="view" id="view-calendar">
+    <div class="cal-toolbar">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" id="calPrev">&#8249;</button>
+        <div class="cal-month" id="calMonthLabel"></div>
+        <button class="cal-nav-btn" id="calNext">&#8250;</button>
+      </div>
+      <button class="cal-today-btn" id="calToday">Today</button>
+    </div>
+    <div class="cal-grid-wrap">
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">New Project</div>
+    <div class="form-grid">
+      <div class="form-field full">
+        <label class="form-label">Project Name</label>
+        <input class="form-input" id="fName" placeholder="e.g. Bakery Rebrand" autocomplete="off">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Client</label>
+        <input class="form-input" id="fClient" placeholder="Client name" autocomplete="off">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Type</label>
+        <select class="form-select" id="fType">
+          <option value="Logo">Logo</option>
+          <option value="Branding">Branding</option>
+          <option value="Social Media">Social Media</option>
+          <option value="Print">Print</option>
+          <option value="Web Design">Web Design</option>
+          <option value="Motion">Motion</option>
+          <option value="Packaging">Packaging</option>
+          <option value="Illustration">Illustration</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="fStatus">
+          <option value="concept">Concept</option>
+          <option value="in-progress">In Progress</option>
+          <option value="review">Review</option>
+          <option value="done">Done</option>
+          <option value="on-hold">On Hold</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Deadline</label>
+        <input class="form-input" id="fDeadline" type="date">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Priority</label>
+        <select class="form-select" id="fPriority">
+          <option value="normal">Normal</option>
+          <option value="high">High</option>
+          <option value="urgent">Urgent</option>
+        </select>
+      </div>
+      <div class="form-field full">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="fNotes" placeholder="Brief, revisions, links…"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="modalCancel">Cancel</button>
+      <button class="btn-save" id="modalSave">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Auth ── */
+// To add/remove users: edit this list. username is case-insensitive.
+const USERS = [
+  { username: 'masroor', password: 'roorie23' },
+  // { username: 'friend1', password: 'theirpassword' },
+  // { username: 'friend2', password: 'theirpassword' },
+];
+const SESSION_KEY = 'syllabdosth_session_v1';
+
+function checkSession() {
+  try { return !!sessionStorage.getItem(SESSION_KEY); } catch { return false; }
+}
+function startSession(user) {
+  try { sessionStorage.setItem(SESSION_KEY, user); } catch {}
+}
+function endSession() {
+  try { sessionStorage.removeItem(SESSION_KEY); } catch {}
+}
+
+document.getElementById('loginBtn').addEventListener('click', attemptLogin);
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
+document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPass').focus(); });
+
+function attemptLogin() {
+  const u = document.getElementById('loginUser').value.trim().toLowerCase();
+  const p = document.getElementById('loginPass').value;
+  const match = USERS.find(x => x.username.toLowerCase() === u && x.password === p);
+  if (match) {
+    startSession(match.username);
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('loginError').textContent = '';
+  } else {
+    document.getElementById('loginError').textContent = 'Incorrect username or password.';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+  }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  endSession();
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginScreen').style.display = 'flex';
+});
+
+// Gate on load
+if (checkSession()) {
+  document.getElementById('loginScreen').style.display = 'none';
+} else {
+  setTimeout(() => document.getElementById('loginUser').focus(), 50);
+}
+
+/* ── State ── */
+let projects = [];
+let editingId = null;
+let calDate = new Date();
+const STORAGE_KEY = 'syllabdosth_projects_v1';
+const THEME_KEY   = 'syllabdosth_theme_v1';
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) projects = JSON.parse(raw);
+  } catch {}
+}
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(projects)); } catch {}
+}
+
+/* ── Theme ── */
+(function initTheme() {
+  try {
+    const t = localStorage.getItem(THEME_KEY);
+    if (t) { document.documentElement.dataset.theme = t; }
+  } catch {}
+})();
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const current = document.documentElement.dataset.theme;
+  const next = current === 'light' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = next;
+  document.getElementById('themeToggle').textContent = next === 'light' ? 'Dark' : 'Light';
+  try { localStorage.setItem(THEME_KEY, next); } catch {}
+});
+(function syncToggleLabel() {
+  const t = document.documentElement.dataset.theme;
+  document.getElementById('themeToggle').textContent = t === 'light' ? 'Dark' : 'Light';
+})();
+
+/* ── Helpers ── */
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+function statusLabel(s) {
+  return { concept: 'Concept', 'in-progress': 'In Progress', review: 'Review', done: 'Done', 'on-hold': 'On Hold' }[s] || s;
+}
+
+function formatDate(str) {
+  if (!str) return '';
+  const [y, m, d] = str.split('-').map(Number);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[m-1]} ${d}, ${y}`;
+}
+
+function deadlineClass(str) {
+  if (!str) return '';
+  const now = new Date(); now.setHours(0,0,0,0);
+  const dl = new Date(str + 'T00:00:00');
+  const diff = (dl - now) / 86400000;
+  if (diff < 0) return 'overdue';
+  if (diff <= 3) return 'soon';
+  return '';
+}
+
+/* ── Render Tracker ── */
+function renderStats() {
+  const counts = { concept: 0, 'in-progress': 0, review: 0, done: 0, 'on-hold': 0 };
+  projects.forEach(p => { if (counts[p.status] !== undefined) counts[p.status]++; });
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-chip"><b>${projects.length}</b> total</div>
+    <span class="stat-sep">|</span>
+    <div class="stat-chip"><b>${counts['in-progress']}</b> in progress</div>
+    <div class="stat-chip"><b>${counts.review}</b> in review</div>
+    <div class="stat-chip"><b>${counts.done}</b> done</div>
+    ${counts['on-hold'] ? `<div class="stat-chip"><b>${counts['on-hold']}</b> on hold</div>` : ''}
+  `;
+}
+
+function renderTracker() {
+  renderStats();
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const fStatus = document.getElementById('filterStatus').value;
+  const fType   = document.getElementById('filterType').value;
+
+  const filtered = projects.filter(p => {
+    const matchQ = !q || p.name.toLowerCase().includes(q) || (p.client||'').toLowerCase().includes(q) || (p.notes||'').toLowerCase().includes(q);
+    const matchS = !fStatus || p.status === fStatus;
+    const matchT = !fType   || p.type === fType;
+    return matchQ && matchS && matchT;
+  }).sort((a, b) => {
+    // urgent/high first, then by deadline
+    const pri = { urgent: 0, high: 1, normal: 2 };
+    if (pri[a.priority] !== pri[b.priority]) return pri[a.priority] - pri[b.priority];
+    if (a.deadline && b.deadline) return a.deadline.localeCompare(b.deadline);
+    if (a.deadline) return -1;
+    if (b.deadline) return 1;
+    return 0;
+  });
+
+  const grid = document.getElementById('projectsGrid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state"><h3>${projects.length ? 'No matching projects' : 'No projects yet'}</h3><p>${projects.length ? 'Try a different filter.' : 'Click "New Project" to add your first design.'}</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(p => {
+    const dlClass = deadlineClass(p.deadline);
+    const dlIcon = dlClass === 'overdue' ? '⚠ ' : dlClass === 'soon' ? '⏰ ' : '📅 ';
+    const priBadge = p.priority !== 'normal' ? `<span class="badge" style="background:${p.priority==='urgent'?'rgba(232,91,91,.2)':'rgba(232,162,64,.15)'}; color:${p.priority==='urgent'?'var(--crit)':'var(--warn)'}">${p.priority}</span>` : '';
+    return `<div class="project-card status-${p.status}" data-id="${p.id}">
+      <div class="card-header">
+        <div class="card-title">${esc(p.name)}</div>
+        <div class="card-actions">
+          <button class="icon-btn" data-edit="${p.id}" title="Edit">✎</button>
+          <button class="icon-btn del" data-del="${p.id}" title="Delete">✕</button>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="badge badge-type">${esc(p.type)}</span>
+        <span class="badge badge-status ${p.status}">${statusLabel(p.status)}</span>
+        ${priBadge}
+      </div>
+      ${p.client ? `<div class="card-client">@ ${esc(p.client)}</div>` : ''}
+      ${p.deadline ? `<div class="card-deadline ${dlClass}">${dlIcon}${formatDate(p.deadline)}</div>` : ''}
+      ${p.notes ? `<div class="card-notes">${esc(p.notes).replace(/\n/g,'<br>')}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('[data-edit]').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); openEdit(btn.dataset.edit); });
+  });
+  grid.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); deleteProject(btn.dataset.del); });
+  });
+}
+
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Render Calendar ── */
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function renderCalendar() {
+  const year = calDate.getFullYear();
+  const month = calDate.getMonth();
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calMonthLabel').textContent = `${months[month]} ${year}`;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev  = new Date(year, month, 0).getDate();
+
+  // Build deadline index
+  const deadlineMap = {};
+  projects.forEach(p => {
+    if (!p.deadline) return;
+    const [y, m, d] = p.deadline.split('-').map(Number);
+    if (y === year && m - 1 === month) {
+      if (!deadlineMap[d]) deadlineMap[d] = [];
+      deadlineMap[d].push(p);
+    }
+  });
+
+  const grid = document.getElementById('calGrid');
+  let html = DOW.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+  const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+
+  for (let i = 0; i < totalCells; i++) {
+    let day, thisMonth = true;
+    if (i < firstDay) {
+      day = daysInPrev - firstDay + i + 1;
+      thisMonth = false;
+    } else if (i >= firstDay + daysInMonth) {
+      day = i - firstDay - daysInMonth + 1;
+      thisMonth = false;
+    } else {
+      day = i - firstDay + 1;
+    }
+
+    const cellDate = new Date(year, month + (i < firstDay ? -1 : i >= firstDay + daysInMonth ? 1 : 0), day);
+    cellDate.setHours(0,0,0,0);
+    const isToday = cellDate.getTime() === today.getTime();
+
+    const eventsHere = thisMonth ? (deadlineMap[day] || []) : [];
+    const maxShow = 3;
+    const shown = eventsHere.slice(0, maxShow);
+    const more = eventsHere.length - maxShow;
+
+    html += `<div class="cal-cell${!thisMonth?' other-month':''}${isToday?' today':''}">
+      <div class="cal-date">${day}</div>
+      ${shown.map(p => `<div class="cal-event ${p.status}" title="${esc(p.name)}${p.client?' @ '+esc(p.client):''}" data-id="${p.id}">${esc(p.name)}</div>`).join('')}
+      ${more > 0 ? `<div class="cal-more">+${more} more</div>` : ''}
+    </div>`;
+  }
+
+  grid.innerHTML = html;
+
+  grid.querySelectorAll('.cal-event[data-id]').forEach(el => {
+    el.addEventListener('click', () => openEdit(el.dataset.id));
+  });
+}
+
+/* ── Modal ── */
+function openModal(id = null) {
+  editingId = id;
+  const p = id ? projects.find(x => x.id === id) : null;
+  document.getElementById('modalTitle').textContent = p ? 'Edit Project' : 'New Project';
+  document.getElementById('fName').value     = p ? p.name     : '';
+  document.getElementById('fClient').value   = p ? p.client   : '';
+  document.getElementById('fType').value     = p ? p.type     : 'Logo';
+  document.getElementById('fStatus').value   = p ? p.status   : 'concept';
+  document.getElementById('fDeadline').value = p ? p.deadline  : '';
+  document.getElementById('fPriority').value = p ? p.priority : 'normal';
+  document.getElementById('fNotes').value    = p ? p.notes    : '';
+  document.getElementById('modalBackdrop').classList.add('open');
+  setTimeout(() => document.getElementById('fName').focus(), 50);
+}
+
+function openEdit(id) { openModal(id); }
+
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('open');
+  editingId = null;
+}
+
+function saveProject() {
+  const name = document.getElementById('fName').value.trim();
+  if (!name) { document.getElementById('fName').focus(); return; }
+
+  const data = {
+    name,
+    client:   document.getElementById('fClient').value.trim(),
+    type:     document.getElementById('fType').value,
+    status:   document.getElementById('fStatus').value,
+    deadline: document.getElementById('fDeadline').value,
+    priority: document.getElementById('fPriority').value,
+    notes:    document.getElementById('fNotes').value.trim(),
+  };
+
+  if (editingId) {
+    const idx = projects.findIndex(p => p.id === editingId);
+    if (idx !== -1) projects[idx] = { ...projects[idx], ...data };
+  } else {
+    projects.push({ id: uid(), ...data, createdAt: new Date().toISOString() });
+  }
+
+  save();
+  closeModal();
+  renderTracker();
+  renderCalendar();
+}
+
+function deleteProject(id) {
+  projects = projects.filter(p => p.id !== id);
+  save();
+  renderTracker();
+  renderCalendar();
+}
+
+/* ── Navigation ── */
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+  });
+});
+
+document.getElementById('addProjectBtn').addEventListener('click', () => openModal());
+document.getElementById('modalCancel').addEventListener('click', closeModal);
+document.getElementById('modalSave').addEventListener('click', saveProject);
+document.getElementById('modalBackdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    if (document.getElementById('modalBackdrop').classList.contains('open')) saveProject();
+  }
+});
+
+document.getElementById('searchInput').addEventListener('input', renderTracker);
+document.getElementById('filterStatus').addEventListener('change', renderTracker);
+document.getElementById('filterType').addEventListener('change', renderTracker);
+
+document.getElementById('calPrev').addEventListener('click', () => {
+  calDate = new Date(calDate.getFullYear(), calDate.getMonth() - 1, 1);
+  renderCalendar();
+});
+document.getElementById('calNext').addEventListener('click', () => {
+  calDate = new Date(calDate.getFullYear(), calDate.getMonth() + 1, 1);
+  renderCalendar();
+});
+document.getElementById('calToday').addEventListener('click', () => {
+  calDate = new Date();
+  renderCalendar();
+});
+
+/* ── Seed sample data if empty ── */
+function seedIfEmpty() {
+  if (projects.length > 0) return;
+  const today = new Date();
+  const fmt = (d) => d.toISOString().slice(0,10);
+  const add = (n) => { const d = new Date(today); d.setDate(d.getDate()+n); return fmt(d); };
+  projects = [
+    { id: uid(), name: 'Aura Coffee — Brand Identity', client: 'Aura Coffee Co.', type: 'Branding', status: 'in-progress', deadline: add(5), priority: 'high', notes: 'Full rebrand: logo, palette, type, packaging.', createdAt: fmt(today) },
+    { id: uid(), name: 'October Social Pack', client: 'Studio Internal', type: 'Social Media', status: 'review', deadline: add(2), priority: 'urgent', notes: '12-post IG grid for October campaign.', createdAt: fmt(today) },
+    { id: uid(), name: 'Moss & Oak — Logo', client: 'Moss & Oak Interiors', type: 'Logo', status: 'concept', deadline: add(12), priority: 'normal', notes: 'Minimalist wordmark. Earthy, natural.', createdAt: fmt(today) },
+    { id: uid(), name: 'Event Poster — Design Week', client: 'Nairobi Design Week', type: 'Print', status: 'done', deadline: add(-3), priority: 'normal', notes: 'A2 print-ready poster. Delivered.', createdAt: fmt(today) },
+    { id: uid(), name: 'Portfolio Site Redesign', client: 'syllabdosth', type: 'Web Design', status: 'on-hold', deadline: add(30), priority: 'normal', notes: 'Waiting on new photo shoot.', createdAt: fmt(today) },
+  ];
+  save();
+}
+
+/* ── Boot ── */
+load();
+seedIfEmpty();
+renderTracker();
+renderCalendar();
+</script>
+
+</body></html>
