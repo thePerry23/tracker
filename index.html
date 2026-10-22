@@ -2,6 +2,8 @@
 <title>Syllabdosth Design Tracker</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-auth-compat.js"></script>
 
 <style>
 /* ─── LOGIN ─── */
@@ -455,8 +457,8 @@ body::before {
     <div class="login-logo"><div class="logo-dot"></div>syllabdosth</div>
     <div class="login-sub">Design Tracker — members only</div>
     <div class="login-field">
-      <label class="login-label">Username</label>
-      <input class="login-input" id="loginUser" placeholder="username" autocomplete="username" autocapitalize="none">
+      <label class="login-label">Email</label>
+      <input class="login-input" id="loginUser" placeholder="email address" type="email" autocomplete="email" autocapitalize="none">
     </div>
     <div class="login-field">
       <label class="login-label">Password</label>
@@ -599,57 +601,47 @@ body::before {
 </div>
 
 <script>
-/* ── Auth ── */
-// To add/remove users: edit this list. username is case-insensitive.
-const USERS = [
-  { username: 'masroor', password: 'roorie23' },
-  // { username: 'friend1', password: 'theirpassword' },
-  // { username: 'friend2', password: 'theirpassword' },
-];
-const SESSION_KEY = 'syllabdosth_session_v1';
+/* ── Firebase Auth ── */
+const firebaseConfig = {
+  apiKey: "AIzaSyACH9hJ9djylhpeiRjta-VdEnsYKC9YLgw",
+  authDomain: "syllabdosth-tracker.firebaseapp.com",
+  projectId: "syllabdosth-tracker",
+  storageBucket: "syllabdosth-tracker.firebasestorage.app",
+  messagingSenderId: "369806363068",
+  appId: "1:369806363068:web:022f6149f008134913c3b9"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-function checkSession() {
-  try { return !!sessionStorage.getItem(SESSION_KEY); } catch { return false; }
-}
-function startSession(user) {
-  try { sessionStorage.setItem(SESSION_KEY, user); } catch {}
-}
-function endSession() {
-  try { sessionStorage.removeItem(SESSION_KEY); } catch {}
-}
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('loginScreen').style.display = 'none';
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    setTimeout(() => document.getElementById('loginUser').focus(), 50);
+  }
+});
 
 document.getElementById('loginBtn').addEventListener('click', attemptLogin);
 document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
 document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginPass').focus(); });
 
 function attemptLogin() {
-  const u = document.getElementById('loginUser').value.trim().toLowerCase();
-  const p = document.getElementById('loginPass').value;
-  const match = USERS.find(x => x.username.toLowerCase() === u && x.password === p);
-  if (match) {
-    startSession(match.username);
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('loginError').textContent = '';
-  } else {
-    document.getElementById('loginError').textContent = 'Incorrect username or password.';
-    document.getElementById('loginPass').value = '';
-    document.getElementById('loginPass').focus();
-  }
+  const email = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+  if (!email || !password) { errEl.textContent = 'Enter your email and password.'; return; }
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => { document.getElementById('loginPass').value = ''; })
+    .catch(() => {
+      errEl.textContent = 'Incorrect email or password.';
+      document.getElementById('loginPass').value = '';
+      document.getElementById('loginPass').focus();
+    });
 }
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  endSession();
-  document.getElementById('loginUser').value = '';
-  document.getElementById('loginPass').value = '';
-  document.getElementById('loginScreen').style.display = 'flex';
-});
-
-// Gate on load
-if (checkSession()) {
-  document.getElementById('loginScreen').style.display = 'none';
-} else {
-  setTimeout(() => document.getElementById('loginUser').focus(), 50);
-}
+document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 
 /* ── State ── */
 let projects = [];
